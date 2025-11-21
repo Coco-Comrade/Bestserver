@@ -1,8 +1,8 @@
 import socket
 import logging
 import os
-import glob
-import shutil
+from Protocol import send, recv
+import Functions
 """
 Server Project-
 Made: 2025
@@ -28,65 +28,19 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     force=True
 )
-
-
-
-def handle_command(command: str) -> str:
-    """
-       Takes the clients input(command) and compares it to existing responses RAND, TIME, ETC.
-       then it returns the adjacent response.
-       :param command: The client's input as a string.
-       :return: The adjacent response as a string.
-       """
-    assert isinstance(command, str),"Command must be a string"
-    if command.startswith("CD "):
-        path = command[3: ].strip()
-        try:
-            os.chdir(path)
-            current_dir = os.getcwd()
-            return "Changed directory: " + current_dir
-        except Exception as e:
-            logging.error(e)
-            return "Error changing directory: " + current_dir
-        except FileNotFoundError:
-            logging.error("No such file or directory")
-            return "No such file or directory"
-    elif command.startswith("LS "):
-            pattern = command[2:].strip()
-            try:
-                files = glob.glob(pattern)
-                if not files:
-                    logging.error("No such file or directory")
-                else:
-                    return "\n".join(files)
-            except Exception as e:
-                logging.error(e)
-    elif command.upper().startswith("DEL "):
-        target = command[4:].strip()
-        try:
-            os.remove(target)
-            return "Removed file: " + target
-        except FileNotFoundError:
-            logging.error("No such file or directory")
-            return "No such file or directory"
-        except Exception as e:
-            logging.error(e)
-            return "Error removing file: " + target
-    elif command.upper().startswith("COPY "):
-        target = command[5:].strip()
-        try:
-            shutil.copy(target)
-            return "Copied file: " + target
-        except FileNotFoundError as f:
-            logging.error("No such file or directory")
-        except Exception as e:
-            logging.error(e)
-            return "Error copying file: " + target
-
-
-
-
-
+def Handle_command(command):
+    command1 = command.split("",1)
+    cmd = command1[0]
+    cmd = cmd.upper()
+    if cmd == "DIR":
+        response = Functions.DR(command1[1])
+    elif cmd == "LIST":
+        response = Functions.list(command1[1])
+    elif cmd == "DEL":
+        response = Functions.DEL(command1[1])
+    elif cmd == "COPY":
+        response = Functions.copy(command1[1])
+    return response
 def main():
     logging.info('Server started')
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -98,11 +52,12 @@ def main():
         while True:
             client_socket, client_address = server_socket.accept()
             logging.info('Client connected')
-
+            buffer = b""
             try:
                 while True:
                     try:
-                        data = client_socket.recv(MAX_PACKET).decode().strip()
+                        msg ,buffer = recv(client_socket, buffer)
+                        data = msg
                     except socket.error as err:
                         logging.error(f"Socket error: {err}")
                         break
@@ -110,8 +65,8 @@ def main():
                         logging.info('Client disconnected')
                     logging.info(f"Data received: {data}")
                     try:
-                        response = handle_command(data)
-                        client_socket.send(response.encode())
+                        response = Handle_command(data)
+                        send(client_socket, response)
                     except AssertionError as e:
                         logging.error(f"Exception raised: {e}")
 
