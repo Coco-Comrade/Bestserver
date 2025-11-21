@@ -28,18 +28,21 @@ def main():
     try:
         client_socket.connect((SERVER_IP, SERVER_PORT))
         logging.info("Client connected to server" + SERVER_IP + ":" + str(SERVER_PORT))
-
+        buffer = b""
         while True:
-            cmd = input("Enter command: (TIME, NAME, RAND, EXIT): ").strip().upper()
+            cmd = input("Enter command: (LIST,DIR,DEL,COPY): ").strip().upper()
             if not cmd:
                 print("Empty command, please try again.")
                 logging.warning("Empty command.")
                 continue
 
-            client_socket.send(cmd.encode())
+            send(client_socket, cmd)
 
 
-            response = client_socket.recv(MAX_PACKET).decode()
+            response, buffer = recv(client_socket, buffer)
+            if response is None:
+                logging.info("Server disconnected")
+                print("ERROR: Server disconnected")
             print("Server:" + response)
             logging.info(response)
 

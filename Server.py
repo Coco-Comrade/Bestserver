@@ -29,18 +29,28 @@ logging.basicConfig(
     force=True
 )
 def Handle_command(command):
-    command1 = command.split("",1)
+    command1 = command.split(" ",1)
     cmd = command1[0]
     cmd = cmd.upper()
-    if cmd == "DIR":
-        response = Functions.DR(command1[1])
-    elif cmd == "LIST":
-        response = Functions.list(command1[1])
-    elif cmd == "DEL":
-        response = Functions.DEL(command1[1])
-    elif cmd == "COPY":
-        response = Functions.copy(command1[1])
+    try:
+        if cmd == "DIR":
+            response = Functions.DR(command1[1])
+        elif cmd == "LIST":
+            response = Functions.list(command1[1])
+        elif cmd == "DEL":
+            response = Functions.DEL(command1[1])
+        elif cmd == "COPY":
+            response = Functions.copy(command1[1])
+        elif cmd == "EXEC":
+            Functions.EXEC(command1[1])
+            response = "Executed " + command1[1]
+    except Exception as error:
+        logging.error(error)
+        response = "Error"
     return response
+
+
+
 def main():
     logging.info('Server started')
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -56,21 +66,23 @@ def main():
             try:
                 while True:
                     try:
-                        msg ,buffer = recv(client_socket, buffer)
-                        data = msg
-                    except socket.error as err:
-                        logging.error(f"Socket error: {err}")
+                        msg, buffer = recv(client_socket, buffer)
+                    except Exception as e:
+                        logging.error(e)
                         break
-                    if not data:
+                    if msg is None:
                         logging.info('Client disconnected')
-                    logging.info(f"Data received: {data}")
+                    logging.info(f"Data received: {msg}")
                     try:
-                        response = Handle_command(data)
-                        send(client_socket, response)
-                    except AssertionError as e:
+                        response = Handle_command(msg)
+                    except Exception as e:
                         logging.error(f"Exception raised: {e}")
-
-                    if data == 'EXIT':
+                        response = "ERROR"
+                    try:
+                        send(client_socket, response)
+                    except Exception as e:
+                        logging.error(f"Exception raised: {e}")
+                    if msg == 'EXIT':
                         logging.info('Client disconnected')
                         client_socket.close()
             finally:

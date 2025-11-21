@@ -2,10 +2,10 @@ import socket
 import struct
 import json
 import threading
-def send(socket, msg):
+def send(sock, msg):
     msg = msg.replace("#", "?")
-    full = "{len(msg)#{msg}]".encode("utf-8")
-    socket.sendall(full)
+    full = f"{len(msg)}#{msg}".encode("utf-8")
+    sock.sendall(full)
 
 
 def recv(sock,buffer = b""):
