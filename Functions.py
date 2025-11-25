@@ -19,16 +19,16 @@ then it returns the adjacent response.
 """
 def DR(path):
     try:
-        os.chdir(path)
+        matches = glob.glob(path)
+        if not matches:
+            logging.error('No matches found')
+            return "No file found"
+        os.chdir(matches[0])
         current_dir = os.getcwd()
-        return "Changed directory: " + os.getcwd()
+        return "Changed Directory to: " + current_dir +" Here are extra options: " + list(path)
     except Exception as e:
         logging.error(e)
-        return "Error changing directory."
-    except FileNotFoundError:
-        logging.error("No such file or directory: " + str(path))
-        return "No such file or directory"
-
+        return "Error with changing directory"
 
 
 def list(pattern):
@@ -57,19 +57,25 @@ def DEL(target):
 
 def copy(target):
     try:
-        parts = target.split(",",1)
+        parts = target.strip().split(",", 1)
         if len(parts) != 2:
             return "COPY requires two arguments"
-        source = parts[0].strip().replace('"', "")
-        destination = parts[1].strip().replace('"', "")
-        shutil.copy(source, destination)
-        return "Copied " + source + " to " + destination
-    except FileNotFoundError as f:
-        logging.error("No such file or directory")
-    except Exception as e:
-        logging.error(e)
-        return "Error copying file: " + target
 
+        source = parts[0].strip().replace('"', '')
+        destination = parts[1].strip().replace('"', '')
+
+        source = os.path.normpath(source)
+        destination = os.path.normpath(destination)
+
+        shutil.copy(source, destination)
+        return f"Copied {source} to {destination}"
+
+    except FileNotFoundError:
+        return f"Source file does not exist: {source}"
+    except PermissionError:
+        return "Permission denied"
+    except Exception as e:
+        return f"Copy failed: {e}"
 
 def EXEC(target):
     try:
@@ -79,4 +85,5 @@ def EXEC(target):
     except Exception as e:
         logging.error(e)
         return "Error executing command: " + target
-
+def EXIT():
+    return "Thank you for executing your command"

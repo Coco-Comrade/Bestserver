@@ -1,6 +1,8 @@
 import socket
 import logging
 import os
+from operator import truediv
+
 from Protocol import send, recv
 import Functions
 """
@@ -50,6 +52,15 @@ def Handle_command(command):
     return response
 
 
+def Handle_Exit(command)->bool:
+    command1 = command.split(" ",1)
+    cmd = command1[0]
+    if cmd == "EXIT":
+        return True
+    else:
+        return False
+
+
 
 def main():
     logging.info('Server started')
@@ -70,10 +81,13 @@ def main():
                     except Exception as e:
                         logging.error(e)
                         break
-                    if msg is None:
-                        logging.info('Client disconnected')
-                    logging.info(f"Data received: {msg}")
                     try:
+                        if Handle_Exit(msg) == True:
+
+                            response = "Disconnected Have a nice day!"
+                            send(client_socket, response)
+                            client_socket.close()
+                            logging.info('Client has requested EXIT')
                         response = Handle_command(msg)
                     except Exception as e:
                         logging.error(f"Exception raised: {e}")
@@ -82,9 +96,6 @@ def main():
                         send(client_socket, response)
                     except Exception as e:
                         logging.error(f"Exception raised: {e}")
-                    if msg == 'EXIT':
-                        logging.info('Client disconnected')
-                        client_socket.close()
             finally:
                 client_socket.close()
     finally:
