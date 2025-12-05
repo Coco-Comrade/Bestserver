@@ -3,7 +3,7 @@ import logging
 import os
 from operator import truediv
 
-from Protocol import send, recv
+from Protocol import send, recv, Send_Bin
 import Functions
 """
 Server Project-
@@ -30,7 +30,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     force=True
 )
-def Handle_command(command):
+def Handle_command(command,client):
     command1 = command.split(" ",1)
     cmd = command1[0]
     cmd = cmd.upper()
@@ -46,6 +46,14 @@ def Handle_command(command):
         elif cmd == "EXEC":
             Functions.EXEC(command1[1])
             response = "Executed " + command1[1]
+        elif cmd == "SCREENSHOT":
+            img_bytes = Functions.Screeen_Shot()
+            if bytes is None:
+                logging.error("screenshot failed")
+                return "Screenshot failed"
+            Send_Bin(client,img_bytes)
+            logging.info("Screenshot succeeded")
+            return None
     except Exception as error:
         logging.error(error)
         response = "Error"
@@ -88,12 +96,15 @@ def main():
                             send(client_socket, response)
                             client_socket.close()
                             logging.info('Client has requested EXIT')
-                        response = Handle_command(msg)
+                        response = Handle_command(msg,client_socket)
                     except Exception as e:
                         logging.error(f"Exception raised: {e}")
                         response = "ERROR"
                     try:
-                        send(client_socket, response)
+                        if response is not None:
+                            send(client_socket, response)
+                        else:
+                            send(client_socket, b"")
                     except Exception as e:
                         logging.error(f"Exception raised: {e}")
             finally:

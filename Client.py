@@ -1,7 +1,7 @@
 import socket
 import logging
 import os
-from Protocol import recv, send
+from Protocol import recv, send, Recv_Bin
 """
 Server Project-
 Made: 2025
@@ -14,7 +14,7 @@ This is the client side program it has its own log and will ensure no unkown
 MAX_PACKET = 1024
 SERVER_IP = '127.0.0.1'
 SERVER_PORT = 8820
-LOG_FILE = os.path.join(os.path.dirname(__file__), 'clients.log')
+LOG_FILE = os.path.join(os.path.dirname(__file__), 'clienwaitr ts.log')
 logging.basicConfig(
     filename=LOG_FILE,
     level=logging.INFO,
@@ -40,11 +40,27 @@ def main():
 
 
             response, buffer = recv(client_socket, buffer)
+            if response is None and buffer and buffer.startswith(b'BINARY:'):
+                header_end = buffer.find(b'#')
+                header = buffer[:header_end].decode()
+                size = int(header.split(":")[1])
+                buffer = buffer[header_end+1:]
+                data = buffer[:size]
+                buffer = buffer[size:]
+                while len(data) < size:
+                    chunk = client_socket.recv(size - len(data))
+                    if not chunk:
+                        logging.warning("Binary recv failed.")
+                        break
+                    data += chunk
+                with open("Screenshot.png", "wb") as f:
+                    f.write(data)
+                print("screenshot saved to screenshot.png")
+                continue
             if response is None:
-                logging.info("Server disconnected")
-                print("ERROR: Server disconnected")
-            print("Server:" + response)
-            logging.info(response)
+                print("Server disconnected.")
+                break
+            print("Server response: " + response)
 
             if cmd == "EXIT":
                 logging.info("Server exited.")
