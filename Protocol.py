@@ -18,7 +18,8 @@ def send(sock, msg):
 
 def Send_Bin(sock,data):
     """
-    Sends binary data to the client or server instead of encoding/decoding
+    Sends binary data to the client or server instead of encoding also sends the length of the message in the
+    start
     :param sock:
     :param data:
     :return: data
