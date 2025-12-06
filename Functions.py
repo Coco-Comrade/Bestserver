@@ -19,7 +19,7 @@ then it returns the adjacent response.
 :param command: The client's input as a string.
 :return: The adjacent response as a string.
 """
-def DR(path):
+def DR(path)->str:
     try:
         matches = glob.glob(path)
         if not matches:
@@ -33,7 +33,7 @@ def DR(path):
         return "Error with changing directory"
 
 
-def list(pattern):
+def list(pattern)->str:
     try:
         files = os.listdir(pattern)
         if not files:
@@ -45,10 +45,10 @@ def list(pattern):
         return "No such file or directory"
 
 
-def DEL(target):
+def DEL(target)->str:
     try:
         os.remove(target)
-        print("Removed file: " + target)
+        return"Removed file: " + target
     except FileNotFoundError:
         logging.error("No such file or directory")
         return "No such file or directory"
@@ -56,22 +56,22 @@ def DEL(target):
         logging.error(e)
         return "Error removing file: " + target
 
-
+def Clean(p)->str:
+    return p.strip('"').strip("'")
 def copy(target):
     try:
         parts = target.strip().split(",", 1)
         if len(parts) != 2:
             return "COPY requires two arguments"
 
-        source = parts[0].strip().replace('"', '')
-        destination = parts[1].strip().replace('"', '')
+        source = Clean(parts[0])
+        destination = Clean(parts[1])
 
         source = os.path.normpath(source)
         destination = os.path.normpath(destination)
 
         shutil.copy(source, destination)
         return f"Copied {source} to {destination}"
-
     except FileNotFoundError:
         return f"Source file does not exist: {source}"
     except PermissionError:
@@ -79,7 +79,7 @@ def copy(target):
     except Exception as e:
         return f"Copy failed: {e}"
 
-def EXEC(target):
+def EXEC(target)->str:
     try:
         args = shlex.split(target)
         subprocess.run(args)

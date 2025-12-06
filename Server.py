@@ -6,23 +6,24 @@ from operator import truediv
 from Protocol import send, recv, Send_Bin
 import Functions
 """
-Server Project-
+Server Project 2.7-
 Made: 2025
 By: Omer Attia
 
 This program opens a TCP server waits for a client and only allows up to 4 byte words to enter.
 The server will have 4 outputs available:
-1. Current time
-2.  random number
-3. The name of the device the server is hosted on
-4. A command that allows the client to disconnect from the server
+1. DIR: Changes directory.
+2. EXEC: Executes the given program.
+3. SCREENSHOT: Takes a screenshot of your current screen!
+4. COPY: Copies a file onto onto another source:destination
+5. DEL: Deletes the given file path.
+
 All logs will be put in 'serverpys.log'
 """
 SERVER_NAME = socket.gethostname() #I made it so the server sent the host device name. I did this because it felt right and cooler hope you like it!!!! :)
 IP = "0.0.0.0"
 PORT = 8820
 QUEUE_LEN = 1
-MAX_PACKET = 1024
 LOG_PATH = os.path.join(os.path.dirname(__file__), 'serverpys.log')
 logging.basicConfig(
     filename=LOG_PATH,
@@ -31,6 +32,13 @@ logging.basicConfig(
     force=True
 )
 def Handle_command(command,client):
+    """
+    This function handles the command sent by the client and sends it to the server after proccessing it with
+    Functions.py there it handles the commands with the nessacery functions.
+    :param command:
+    :param client:
+    :return: server response
+    """
     command1 = command.split(" ",1)
     cmd = command1[0]
     cmd = cmd.upper()
@@ -61,6 +69,12 @@ def Handle_command(command,client):
 
 
 def Handle_Exit(command)->bool:
+    """
+    This functions ensures that the client wants to exit the server and responses with True or False
+    accordingly.
+    :param command:
+    :return:
+    """
     command1 = command.split(" ",1)
     cmd = command1[0]
     if cmd == "EXIT":
@@ -114,3 +128,24 @@ def main():
         logging.info('Server closed')
 if __name__ == "__main__":
     main()
+    assert isinstance(IP, str) and IP != "", "IP must be a string"
+    assert isinstance(PORT, int) and PORT > 0, "PORT must be a positive integer"
+    assert isinstance(QUEUE_LEN, int), "QUEUE_LEN must be a positive integer"
+    assert isinstance(LOG_PATH, str) and LOG_PATH.endswith(".log"), "LOG_PATH must be a string and must end with .log"
+
+    assert callable(Handle_command), "Handle_command must be a callable"
+    assert callable(Handle_Exit), "Handle_Exit must be a callable"
+    assert callable(Functions.list), "Functions.list must be a callable"
+    assert callable(Functions.DEL), "Functions.DEL must be a callable"
+    assert callable(Functions.copy), "Functions.copy must be a callable"
+    assert callable(Functions.EXEC), "Functions.EXEC must be a callable"
+    assert callable(Functions.Screeen_Shot), "Functions.Screeen_Shot must be a callable"
+    assert callable(send), "send must be a callable"
+    assert callable(recv), "recv must be a callable"
+    assert callable(Send_Bin), "Send_Bin must be a callable"
+
+    needed_functions = ["DR", "list", "DEL", "copy", "EXEC", "Screen_Shot"]
+    for fn in needed_functions:
+        assert hasattr(Functions, fn) and callable(getattr(Functions,fn)),f"{fn}" "missing in Functions module"
+
+    assert hasattr(logging, "info"), "Log must be an instance of logging.ERROR"

@@ -11,7 +11,7 @@ This is the client side program it has its own log and will ensure no unkown
  commands are inputted into the server. Also ensures the client disconnects properly\
  log file: clients.log
 """
-MAX_PACKET = 1024
+
 SERVER_IP = '127.0.0.1'
 SERVER_PORT = 8820
 LOG_FILE = os.path.join(os.path.dirname(__file__), 'clienwaitr ts.log')
@@ -30,7 +30,7 @@ def main():
         logging.info("Client connected to server" + SERVER_IP + ":" + str(SERVER_PORT))
         buffer = b""
         while True:
-            cmd = input("Enter command: (LIST,DIR,DEL,COPY): ").strip().upper()
+            cmd = input("Enter command: (DIR,DEL,COPY,SCREENSHOT,EXEC): ").strip().upper()
             if not cmd:
                 print("Empty command, please try again.")
                 logging.warning("Empty command.")
@@ -73,3 +73,12 @@ def main():
         client_socket.close()
 if __name__ == "__main__":
     main()
+    assert isinstance(SERVER_IP, str) and SERVER_IP.startswith != "", "SERVER IP is not valid"
+    assert isinstance(SERVER_PORT, int) and SERVER_PORT > 0, "Server port must be a positive integer"
+    assert isinstance(LOG_FILE, str) and LOG_FILE.endswith(".log"), "Log filename must be a valid path"
+    assert isinstance(SERVER_IP, str) and SERVER_IP.startswith("/"), "Server IP is not valid"
+    assert callable(send), "send must be a callable"
+    assert callable(recv), "recv must be a callable"
+    assert callable(Recv_Bin), "Recv must be a callable"
+    assert hasattr(logging, "info"), "Log must be an instance of logging.ERROR"
+
