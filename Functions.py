@@ -32,7 +32,7 @@ def DR(path)->str:
             return "No file found"
         os.chdir(matches[0])
         current_dir = os.getcwd()
-        return "Changed Directory to: " + current_dir +" Here are extra options: " + list(path)
+        return "Files in: " + current_dir +" are: " + list(path)
     except Exception as e:
         logging.error(e)
         return "Error with changing directory"
@@ -40,7 +40,7 @@ def DR(path)->str:
 
 def list(pattern)->str:
     """
-    Kind of a useless function I kept around it lists all of the files in a given directory
+    Helper function for DIR, lists all files in a directory.
     :param pattern:
     :return:
     """""
