@@ -20,6 +20,11 @@ then it returns the adjacent response.
 :return: The adjacent response as a string.
 """
 def DR(path)->str:
+    """
+    Writes all the files inside of the given directory
+    :param path:
+    :return:
+    """""
     try:
         matches = glob.glob(path)
         if not matches:
@@ -34,6 +39,11 @@ def DR(path)->str:
 
 
 def list(pattern)->str:
+    """
+    Kind of a useless function I kept around it lists all of the files in a given directory
+    :param pattern:
+    :return:
+    """""
     try:
         files = os.listdir(pattern)
         if not files:
@@ -46,6 +56,11 @@ def list(pattern)->str:
 
 
 def DEL(target)->str:
+    """
+    Deletes the given file in the path.
+    :param target:
+    :return:
+    """
     try:
         os.remove(target)
         return"Removed file: " + target
@@ -59,6 +74,11 @@ def DEL(target)->str:
 def Clean(p)->str:
     return p.strip('"').strip("'")
 def copy(target):
+    """
+    Copies the given file to the given destination.
+    :param target:
+    :return:
+    """
     try:
         parts = target.strip().split(",", 1)
         if len(parts) != 2:
@@ -80,6 +100,11 @@ def copy(target):
         return f"Copy failed: {e}"
 
 def EXEC(target)->str:
+    """
+    Executes the application (needs the full path to the application)
+    :param target:
+    :return:
+    """
     try:
         args = shlex.split(target)
         subprocess.run(args)
@@ -91,6 +116,10 @@ def EXIT():
     return "Thank you for executing your command"
 
 def Screeen_Shot()-> bytes:
+    """
+    Takes a screenshot of your current screen
+    :return: 
+    """
     try:
         screenshot = pyautogui.screenshot()
         buf = io.BytesIO()
