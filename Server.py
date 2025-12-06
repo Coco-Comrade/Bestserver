@@ -47,7 +47,7 @@ def Handle_command(command,client):
             response = Functions.DR(command1[1])
         elif cmd == "LIST":
             response = Functions.list(command1[1])
-        elif cmd == "DEL":
+        elif cmd == "DELETE":
             response = Functions.DEL(command1[1])
         elif cmd == "COPY":
             response = Functions.copy(command1[1])

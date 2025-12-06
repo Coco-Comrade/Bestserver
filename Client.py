@@ -30,7 +30,7 @@ def main():
         logging.info("Client connected to server" + SERVER_IP + ":" + str(SERVER_PORT))
         buffer = b""
         while True:
-            cmd = input("Enter command: (DIR,DEL,COPY,SCREENSHOT,EXEC): ").strip().upper()
+            cmd = input("Enter command: (DIR,DELETE,COPY,SCREENSHOT,EXEC): ").strip().upper()
             if not cmd:
                 print("Empty command, please try again.")
                 logging.warning("Empty command.")
