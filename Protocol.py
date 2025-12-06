@@ -3,6 +3,9 @@ import socket
 import struct
 import json
 import threading
+
+
+
 def send(sock, msg):
     """
     Send a message to the server and inputs the number of bytes to send in the beggining of the
@@ -79,3 +82,9 @@ def recv(sock,buffer = b""):
         remaining = buffer[total_len:]
         return msg.replace("#", "?"), remaining
 
+assert 'send' in globals() and callable(send), "send is not callable or is missing"
+assert 'recv' in globals() and callable(recv), "recv is not callable or is missing"
+assert 'Send_Bin' in globals() and callable(Send_Bin), "Send_Bin is not callable or is missing"
+assert 'Recv_Bin' in globals() and callable(Recv_Bin),"Recv_Bin is not callable or is missing"
+
+assert isinstance(b"", bytes), "b is not bytes"
